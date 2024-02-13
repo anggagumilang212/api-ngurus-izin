@@ -1,10 +1,13 @@
 module.exports = app => {
-    const layanan = require("../controllers/layananController");
+  const express = require('express');
+  const router = express.Router();
+  const layanan = require('../controllers/layananController');
+  const uploader = require('../helpers/uploader');
   
-    var router = require("express").Router();
+  // ... other middleware declarations
   
-    // Create a new Tutorial
-    router.post("/", layanan.create);
+  // Route for image upload
+  router.post('/', uploader.array('gambar', 2), layanan.create);
   
     // Retrieve all Tutorials
     router.get("/", layanan.findAll);

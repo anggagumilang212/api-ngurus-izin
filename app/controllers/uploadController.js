@@ -2,7 +2,7 @@ const upload = require("../helpers/uploader");
 const util = require("util");
 
 exports.index = (req, res) => {
-    return res.render('index', { message: req.flash() });
+    return res.render('views/', { message: req.flash() });
 }
 
 exports.uploadSingle = (req, res) => {

@@ -11,6 +11,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       email: {
         type: Sequelize.STRING
+      },
+      maps: {
+        type: Sequelize.STRING
+      },
+      gambar: {
+        type: Sequelize.STRING
       }
     });
   
