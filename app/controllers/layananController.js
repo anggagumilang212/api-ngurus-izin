@@ -1,6 +1,7 @@
 const db = require("../models");
 const Layanan = db.layanan;
 const Op = db.Sequelize.Op;
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 // Create and Save a new layanan
 exports.create = (req, res) => {
@@ -12,7 +13,7 @@ exports.create = (req, res) => {
       return;
     }
   
-    // Create a Tutorial
+    // Create a Layanan
     const layanan = {
       nama: req.body.nama,
       gambar: req.body.gambar,
@@ -21,7 +22,7 @@ exports.create = (req, res) => {
       status: req.body.status,
     };
   
-    // Save Tutorial in the database
+    // Save Layanan in the database
     Layanan.create(layanan)
       .then(data => {
         res.send(data);
@@ -35,21 +36,23 @@ exports.create = (req, res) => {
   };
 
 // Retrieve all layanans from the database.
-exports.findAll = (req, res) => {
-    const nama = req.query.nama;
-    var condition = nama ? { nama: { [Op.like]: `%${nama}%` } } : null;
-  
-    Layanan.findAll({ where: condition })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving layanans."
-        });
-      });
-  };
+
+exports.findAll = async (req, res) => {
+  try {
+    const layanans = await Layanan.findAll();
+    const Serializer = new JSONAPISerializer('layanan', {
+      attributes: ['nama', 'gambar', 'harga', 'deskripsi', 'status']
+    });
+    // Gunakan serializer untuk mengubah data menjadi JSON
+    const layanan = Serializer.serialize(layanans);
+
+    // Kirim response dengan data JSON
+    res.send(layanan);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Error retrieving layanans.' });
+  }
+};
 
 // Find a single layanan with an id
 exports.findOne = (req, res) => {
