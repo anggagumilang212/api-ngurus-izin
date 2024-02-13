@@ -2,6 +2,7 @@ const db = require("../models");
 const Administrators = db.administrators;
 const Op = db.Sequelize.Op;
 const bcrypt = require('bcryptjs'); // Import bcrypt for password hashing
+const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 // Create and Save a new administrators
 exports.create = async (req, res) => {
@@ -33,43 +34,49 @@ exports.create = async (req, res) => {
     });
 };
 
-// Retrieve all administratorss from the database.
-exports.findAll = (req, res) => {
-    const id_layanan = req.query.id_layanan;
-    var condition = id_layanan ? { id_layanan: { [Op.like]: `%${id_layanan}%` } } : null;
-  
-    Administrators.findAll({ where: condition })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving administratorss."
-        });
-      });
-  };
+ // serialize
+ const adminSerializer = new JSONAPISerializer('administrators', {
+  attributes: ['username', 'email', 'password', 'name', 'phone'],
+});
 
-// Find a single administrators with an id
+// Retrieve all administratorss from the database.
+exports.findAll = async (req, res) => {
+  try {
+    const administrators = await Administrators.findAll();
+    
+    // Gunakan serializer untuk mengubah data menjadi JSON
+    const administrator = adminSerializer.serialize(administrators);
+
+    // Kirim response dengan data JSON
+    res.send(administrator);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Error retrieving administrators.' });
+  }
+};
+
+// Find a single admin with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;
   
     Administrators.findByPk(id)
-      .then(data => {
-        if (data) {
-          res.send(data);
-        } else {
-          res.status(404).send({
-            message: `Cannot find administrators with id=${id}.`
-          });
-        }
-      })
-      .catch(err => {
-        res.status(500).send({
-          message: "Error retrieving administrators with id=" + id
+    .then(data => {
+      if (data) {
+        const serializedData = adminSerializer.serialize(data);
+        res.send(serializedData);
+      } else {
+        res.status(404).send({
+          message: `Cannot find admin with id=${id}.`
         });
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send({
+        message: "Error retrieving admin with id=" + id
       });
-  };
+    });
+};
 
 // Update a administrators by the id in the request
 exports.update = async (req, res) => {

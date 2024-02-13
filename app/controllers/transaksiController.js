@@ -1,11 +1,12 @@
 const db = require("../models");
 const Transaksi = db.transaksi;
 const Op = db.Sequelize.Op;
+const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 // Create and Save a new transaksi
 exports.create = (req, res) => {
     // Validate request
-    if (!req.body.nama) {
+    if (!req.body.id_layanan) {
       res.status(400).send({
         message: "Content can not be empty!"
       });
@@ -34,43 +35,48 @@ exports.create = (req, res) => {
       });
   };
 
-// Retrieve all transaksis from the database.
-exports.findAll = (req, res) => {
-    const id_layanan = req.query.id_layanan;
-    var condition = id_layanan ? { id_layanan: { [Op.like]: `%${id_layanan}%` } } : null;
-  
-    Transaksi.findAll({ where: condition })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving transaksis."
-        });
-      });
-  };
+  const transaksiSerializer = new JSONAPISerializer('transaksi', {
+    attributes: ['id_layanan', 'ktp', 'npwp', 'phone', 'lokasi'],
+  });
 
-// Find a single transaksi with an id
+// Retrieve all transaksis from the database.
+exports.findAll = async (req, res) => {
+  try {
+    const transaksis = await Transaksi.findAll();
+    
+    // Gunakan serializer untuk mengubah data menjadi JSON
+    const transaksi = transaksiSerializer.serialize(transaksis);
+
+    // Kirim response dengan data JSON
+    res.send(transaksi);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Error retrieving transaksi.' });
+  }
+};
+
+// Find a single admin with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;
   
     Transaksi.findByPk(id)
-      .then(data => {
-        if (data) {
-          res.send(data);
-        } else {
-          res.status(404).send({
-            message: `Cannot find transaksi with id=${id}.`
-          });
-        }
-      })
-      .catch(err => {
-        res.status(500).send({
-          message: "Error retrieving transaksi with id=" + id
+    .then(data => {
+      if (data) {
+        const serializedData = transaksiSerializer.serialize(data);
+        res.send(serializedData);
+      } else {
+        res.status(404).send({
+          message: `Cannot find transaksi with id=${id}.`
         });
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send({
+        message: "Error retrieving transaksi with id=" + id
       });
-  };
+    });
+};
 
 // Update a transaksi by the id in the request
 exports.update = (req, res) => {

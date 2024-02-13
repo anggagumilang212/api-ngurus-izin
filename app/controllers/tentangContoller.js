@@ -1,6 +1,7 @@
 const db = require("../models");
 const Tentang = db.tentang;
 const Op = db.Sequelize.Op;
+const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 // Create and Save a new Tentang
 exports.create = (req, res) => {
@@ -33,43 +34,49 @@ exports.create = (req, res) => {
       });
   };
 
-// Retrieve all Tentangs from the database.
-exports.findAll = (req, res) => {
-    const tentang = req.query.tentang;
-    var condition = tentang ? { tentang: { [Op.like]: `%${tentang}%` } } : null;
+  const tentangSerializer = new JSONAPISerializer('tentang', {
+    attributes: ['tentang', 'phone', 'lokasi', 'email'],
+  });
   
-    Tentang.findAll({ where: condition })
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving Tentangs."
-        });
-      });
-  };
 
-// Find a single Tentang with an id
+// Retrieve all Tentangs from the database.
+exports.findAll = async (req, res) => {
+  try {
+    const tentangs = await Tentang.findAll();
+    
+    // Gunakan serializer untuk mengubah data menjadi JSON
+    const tentang = tentangSerializer.serialize(tentangs);
+
+    // Kirim response dengan data JSON
+    res.send(tentang);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Error retrieving tentang.' });
+  }
+};
+
+// Find a single admin with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;
   
     Tentang.findByPk(id)
-      .then(data => {
-        if (data) {
-          res.send(data);
-        } else {
-          res.status(404).send({
-            message: `Cannot find Tentang with id=${id}.`
-          });
-        }
-      })
-      .catch(err => {
-        res.status(500).send({
-          message: "Error retrieving Tentang with id=" + id
+    .then(data => {
+      if (data) {
+        const serializedData = tentangSerializer.serialize(data);
+        res.send(serializedData);
+      } else {
+        res.status(404).send({
+          message: `Cannot find tentang with id=${id}.`
         });
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send({
+        message: "Error retrieving tentang with id=" + id
       });
-  };
+    });
+};
 
 // Update a Tentang by the id in the request
 exports.update = (req, res) => {

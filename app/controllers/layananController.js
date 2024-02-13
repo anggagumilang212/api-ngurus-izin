@@ -1,7 +1,7 @@
 const db = require("../models");
 const Layanan = db.layanan;
 const Op = db.Sequelize.Op;
-var JSONAPISerializer = require('jsonapi-serializer').Serializer;
+const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 // Create and Save a new layanan
 exports.create = (req, res) => {
@@ -35,16 +35,20 @@ exports.create = (req, res) => {
       });
   };
 
+
+  // serialize
+  const layananSerializer = new JSONAPISerializer('layanan', {
+    attributes: ['nama', 'gambar', 'harga', 'deskripsi', 'status'],
+  });
+
 // Retrieve all layanans from the database.
 
 exports.findAll = async (req, res) => {
   try {
     const layanans = await Layanan.findAll();
-    const Serializer = new JSONAPISerializer('layanan', {
-      attributes: ['nama', 'gambar', 'harga', 'deskripsi', 'status']
-    });
+    
     // Gunakan serializer untuk mengubah data menjadi JSON
-    const layanan = Serializer.serialize(layanans);
+    const layanan = layananSerializer.serialize(layanans);
 
     // Kirim response dengan data JSON
     res.send(layanan);
@@ -59,21 +63,23 @@ exports.findOne = (req, res) => {
     const id = req.params.id;
   
     Layanan.findByPk(id)
-      .then(data => {
-        if (data) {
-          res.send(data);
-        } else {
-          res.status(404).send({
-            message: `Cannot find layanan with id=${id}.`
-          });
-        }
-      })
-      .catch(err => {
-        res.status(500).send({
-          message: "Error retrieving layanan with id=" + id
+    .then(data => {
+      if (data) {
+        const serializedData = layananSerializer.serialize(data);
+        res.send(serializedData);
+      } else {
+        res.status(404).send({
+          message: `Cannot find layanan with id=${id}.`
         });
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send({
+        message: "Error retrieving layanan with id=" + id
       });
-  };
+    });
+};
 
 // Update a layanan by the id in the request
 exports.update = (req, res) => {

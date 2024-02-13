@@ -6,7 +6,7 @@ module.exports = (sequelize, Sequelize) => {
       phone: {
         type: Sequelize.INTEGER
       },
-      instagram: {
+      lokasi: {
         type: Sequelize.STRING
       },
       email: {
