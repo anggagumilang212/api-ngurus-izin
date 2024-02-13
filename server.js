@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-
+// import {resolve} from "path";
+// import multer from "multer";
 const app = express();
 
 const db = require("./app/models");
@@ -24,17 +25,22 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
+// app.use("/static", express.static(resolve("public")));
+// app.use(multer({dest:"public/images"}).single("image"));
+
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
+  res.json({ message: "Welcome to Izin AJa application." });
 });
 
 
 require("./app/routes/tentang")(app);
 require("./app/routes/layanan")(app);
+require("./app/routes/transaksi")(app);
+require("./app/routes/administrators")(app);
 
 // set port, listen for requests
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });

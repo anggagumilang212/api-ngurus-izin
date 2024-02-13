@@ -21,5 +21,7 @@ db.sequelize = sequelize;
 
 db.tentang = require("./Tentang.js")(sequelize, Sequelize);
 db.layanan = require("./Layanan.js")(sequelize, Sequelize);
+db.transaksi = require("./Transaksi.js")(sequelize, Sequelize);
+db.administrators = require("./Administrators.js")(sequelize, Sequelize);
 
 module.exports = db;
