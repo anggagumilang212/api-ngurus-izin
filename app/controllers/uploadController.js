@@ -1,4 +1,4 @@
-const upload = require("../helpers/uploader");
+const upload = require("../middleware/uploader");
 const util = require("util");
 
 exports.index = (req, res) => {

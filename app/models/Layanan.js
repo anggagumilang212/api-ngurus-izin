@@ -4,7 +4,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING
       },
       gambar: {
-        type: Sequelize.BLOB("long")
+        type: Sequelize.STRING
       },
       harga: {
         type: Sequelize.INTEGER

@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-// import {resolve} from "path";
-// import multer from "multer";
+
 const app = express();
 app.use(cors());
 
@@ -20,8 +19,6 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 
-// app.use("/static", express.static(resolve("public")));
-// app.use(multer({dest:"public/images"}).single("image"));
 
 // parse requests of content-type - application/json
 app.use(express.json());
@@ -39,7 +36,6 @@ require("./app/routes/tentang")(app);
 require("./app/routes/layanan")(app);
 require("./app/routes/transaksi")(app);
 require("./app/routes/administrators")(app);
-require("./app/routes/index")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;

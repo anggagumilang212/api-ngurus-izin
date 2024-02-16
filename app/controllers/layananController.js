@@ -3,46 +3,50 @@ const db = require("../models");
 const Layanan = db.layanan;
 const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
+const bufferPlugin = require("buffer-serializer");
 
 const multer = require('multer');
 
 // Create and Save a new layanan
-exports.create= async (req, res) => {
-  // Implement validations for required fields, file types, sizes, etc.
-
-  // Process uploaded files:
-  const imageUrls = [];
-  for (const file of req.files) {
-    // Extract relevant information (e.g., path, filename, metadata)
-    // Store or process images as needed (e.g., resize, compress)
-    imageUrls.push('public/image');
-  }
-
-  // Create a new layanan object with processed image data
-  const layanan = {
-    nama: req.body.nama,
-    gambar: imageUrls, // Use processed 'imageUrls' here
-    harga: req.body.harga,
-    deskripsi: req.body.deskripsi,
-    status: req.body.status,
-    // ... other fields
-  };
-
-  // Save the layanan to your database using appropriate methods
-  // Handle errors and success scenarios accordingly
-
-  // Example using Sequelize (replace with your ORM):
+exports.create = async (req, res) => {
   try {
+    // Process uploaded files:
+    const imageUrls = [];
+    for (const file of req.files) {
+      // Simpan atau proses gambar dan dapatkan URL atau path-nya
+      const imageUrl = `/images/${file.filename}`; // Ubah sesuai dengan lokasi penyimpanan gambar Anda
+      imageUrls.push(imageUrl);
+    }
+
+    // Ambil URL gambar pertama jika tersedia
+    const gambar = imageUrls.length > 0 ? imageUrls[0] : null;
+
+    // Buat objek layanan dengan URL gambar yang telah diproses
+    const layanan = {
+      nama: req.body.nama,
+      gambar: gambar, // Gunakan URL gambar pertama yang telah diproses di sini
+      harga: req.body.harga,
+      deskripsi: req.body.deskripsi,
+      status: req.body.status,
+      // ... other fields
+    };
+
+    // Simpan layanan ke database menggunakan metode yang sesuai
+    // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
+
+    // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
     const newLayanan = await Layanan.create(layanan);
-    res.status(201).send(newLayanan); // Or your desired response
+    res.status(201).send(newLayanan); // Atau respons yang diinginkan
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 }
 
+
 // serialize
 const layananSerializer = new JSONAPISerializer('layanan', {
   attributes: ['nama', 'gambar', 'harga', 'deskripsi', 'status'],
+  plugins: [bufferPlugin],
 });
 
 // Retrieve all layanans from the database.
@@ -86,28 +90,48 @@ exports.findOne = (req, res) => {
 };
 
 // Update a layanan by the id in the request
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
 
-  Layanan.update(req.body, {
-    where: { id: id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "layanan was updated successfully."
-        });
-      } else {
-        res.send({
-          message: `Cannot update layanan with id=${id}. Maybe layanan was not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating layanan with id=" + id
-      });
+  // Process uploaded files:
+  const imageUrls = [];
+  for (const file of req.files) {
+    // Simpan atau proses gambar dan dapatkan URL atau path-nya
+    const imageUrl = `/images/${file.filename}`; // Ubah sesuai dengan lokasi penyimpanan gambar Anda
+    imageUrls.push(imageUrl);
+  }
+
+  // Ambil URL gambar pertama jika tersedia
+  const gambar = imageUrls.length > 0 ? imageUrls[0] : null;
+
+  // Buat objek update dengan URL gambar yang telah diproses
+  const layanan = {
+    nama: req.body.nama,
+    ...(gambar && { gambar }), // Perbarui gambar hanya jika ada
+    harga: req.body.harga,
+    deskripsi: req.body.deskripsi,
+    status: req.body.status,
+    // ... other fields
+  };
+
+  // Simpan layanan ke database menggunakan metode yang sesuai
+  // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
+
+  // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
+  try {
+    const updatedLayanan = await Layanan.update(layanan, {
+      where: { id: id }
     });
+    if (updatedLayanan) {
+      res.send({
+        message: "Layanan berhasil diubah."
+      });
+        } else {
+      res.status(404).send({ message: `Layanan with id=${id} not found` });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 };
 
 // Delete a layanan with the specified id in the request

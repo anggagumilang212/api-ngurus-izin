@@ -2,10 +2,7 @@ module.exports = app => {
   const express = require('express');
   const router = express.Router();
   const layanan = require('../controllers/layananController');
-  const uploader = require('../helpers/uploader');
-  
-  // ... other middleware declarations
-  
+  const uploader = require('../middleware/uploader');
   // Route for image upload
   router.post('/', uploader.array('gambar', 2), layanan.create);
   
@@ -19,7 +16,7 @@ module.exports = app => {
     router.get("/:id", layanan.findOne);
   
     // Update a Tutorial with id
-    router.put("/:id", layanan.update);
+    router.put("/:id", uploader.array('gambar', 2), layanan.update);
   
     // Delete a Tutorial with id
     router.delete("/:id", layanan.delete);
