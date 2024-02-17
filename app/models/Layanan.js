@@ -8,7 +8,7 @@ module.exports = (sequelize, Sequelize) => {
       gambar: {
         type: Sequelize.STRING
       },
-      url_gambar: {
+      urlGambar: {
         type: Sequelize.STRING
       },
       harga: {

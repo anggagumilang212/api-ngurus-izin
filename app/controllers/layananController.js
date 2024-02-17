@@ -23,7 +23,7 @@ exports.create = async (req, res) => {
     const layanan = {
       nama: req.body.nama,
       gambar: imageName, 
-      url_gambar: imageUrl, 
+      urlGambar: imageUrl, 
       harga: req.body.harga,
       deskripsi: req.body.deskripsi,
       status: req.body.status,
@@ -43,7 +43,7 @@ exports.create = async (req, res) => {
 
 // serialize
 const layananSerializer = new JSONAPISerializer('layanan', {
-  attributes: ['nama', 'gambar','url_gambar', 'harga', 'deskripsi', 'status'],
+  attributes: ['nama', 'gambar','urlGambar', 'harga', 'deskripsi', 'status'],
 });
 
 // Retrieve all layanans from the database.
@@ -100,7 +100,7 @@ exports.update = async (req, res) => {
   const layanan = {
     nama: req.body.nama,
     ...(imageName && { gambar: imageName }), // Perbarui gambar hanya jika ada
-    url_gambar: imageUrl,
+    urlGambar: imageUrl,
     harga: req.body.harga,
     deskripsi: req.body.deskripsi,
     status: req.body.status,
