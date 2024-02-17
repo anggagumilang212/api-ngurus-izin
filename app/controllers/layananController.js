@@ -40,14 +40,14 @@ exports.create = async (req, res) => {
   }
 }
 
-
 // serialize
 const layananSerializer = new JSONAPISerializer('layanan', {
-  attributes: ['nama', 'gambar','urlGambar', 'harga', 'deskripsi', 'status'],
+  attributes: ['nama', 'gambar', 'urlGambar', 'harga', 'deskripsi', 'status'],
+  keyForAttribute: 'camelCase',
+
 });
 
 // Retrieve all layanans from the database.
-
 exports.findAll = async (req, res) => {
   try {
     const layanans = await Layanan.findAll();
@@ -63,14 +63,15 @@ exports.findAll = async (req, res) => {
   }
 };
 
+
 // Find a single layanan with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
   Layanan.findByPk(id)
-    .then(data => {
-      if (data) {
-        const serializedData = layananSerializer.serialize(data);
+    .then(layanan => {
+      if (layanan) {
+        const serializedData = layananSerializer.serialize(layanan);
         res.send(serializedData);
       } else {
         res.status(404).send({
