@@ -2,38 +2,44 @@ const db = require("../models");
 const Transaksi = db.transaksi;
 const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
+const bufferPlugin = require("buffer-serializer");
 
 // Create and Save a new transaksi
-exports.create = (req, res) => {
-    // Validate request
-    if (!req.body.id_layanan) {
-      res.status(400).send({
-        message: "Content can not be empty!"
-      });
-      return;
+exports.create = async (req, res) => {
+  try {
+    // Process uploaded files:
+    const imageUrls = [];
+    for (const file of req.files) {
+      // Simpan atau proses gambar dan dapatkan URL atau path-nya
+      const imageUrl = `/images/${file.filename}`; // Ubah sesuai dengan lokasi penyimpanan gambar Anda
+      imageUrls.push(imageUrl);
     }
-  
-    // Create a Tutorial
-    const transaksi = {
+
+    // Ambil URL gambar pertama jika tersedia
+    const ktp = imageUrls.length > 0 ? imageUrls[0] : null;
+    const npwp = imageUrls.length > 0 ? imageUrls[0] : null;
+
+    // Buat objek layanan dengan URL gambar yang telah diproses
+    const layanan = {
       id_layanan: req.body.id_layanan,
-      ktp: req.body.ktp,
-      npwp: req.body.npwp,
+      ktp: ktp, // Gunakan URL gambar pertama yang telah diproses di sini
+      ktp: npwp, // Gunakan URL gambar pertama yang telah diproses di sini
       phone: req.body.phone,
       lokasi: req.body.lokasi,
+      status: req.body.status,
+      // ... other fields
     };
-  
-    // Save Tutorial in the database
-    Transaksi.create(transaksi)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the transaksi."
-        });
-      });
-  };
+
+    // Simpan layanan ke database menggunakan metode yang sesuai
+    // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
+
+    // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
+    const newLayanan = await Layanan.create(layanan);
+    res.status(201).send(newLayanan); // Atau respons yang diinginkan
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+}
 
   const transaksiSerializer = new JSONAPISerializer('transaksi', {
     attributes: ['id_layanan', 'ktp', 'npwp', 'phone', 'lokasi'],

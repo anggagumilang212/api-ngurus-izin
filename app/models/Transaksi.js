@@ -3,19 +3,41 @@ module.exports = (sequelize, Sequelize) => {
       id_layanan: {
         type: Sequelize.INTEGER
       },
-      ktp: {
+      ktp_satu: {
         type: Sequelize.STRING
       },
-      npwp: {
+      ktp_dua: {
+        type: Sequelize.STRING
+      },
+      npwp_satu: {
+        type: Sequelize.STRING
+      },
+      npwp_dua: {
+        type: Sequelize.STRING
+      },
+      url_ktp_satu: {
+        type: Sequelize.STRING
+      },
+      url_ktp_dua: {
+        type: Sequelize.STRING
+      },
+      url_npwp_satu: {
+        type: Sequelize.STRING
+      },
+      url_npwp_dua: {
         type: Sequelize.STRING
       },
       phone: {
         type: Sequelize.INTEGER
       },
-      lokasi: {
+      domisili: {
         type: Sequelize.STRING
+      },
+      status_transaksi: {
+        type: Sequelize.INTEGER
       }
     });
-  
+
+
     return Transaksi;
   };

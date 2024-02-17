@@ -3,32 +3,30 @@ const db = require("../models");
 const Layanan = db.layanan;
 const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
-const bufferPlugin = require("buffer-serializer");
 
 const multer = require('multer');
 
 // Create and Save a new layanan
 exports.create = async (req, res) => {
   try {
+    const file = req.file;
+
     // Process uploaded files:
-    const imageUrls = [];
-    for (const file of req.files) {
       // Simpan atau proses gambar dan dapatkan URL atau path-nya
-      const imageUrl = `/images/${file.filename}`; // Ubah sesuai dengan lokasi penyimpanan gambar Anda
-      imageUrls.push(imageUrl);
-    }
+      const imageName = `${file.filename}`;
+      const imageUrl = `${req.protocol}://${req.get('host')}/layanan/${file.filename}`;
+    
 
     // Ambil URL gambar pertama jika tersedia
-    const gambar = imageUrls.length > 0 ? imageUrls[0] : null;
 
     // Buat objek layanan dengan URL gambar yang telah diproses
     const layanan = {
       nama: req.body.nama,
-      gambar: gambar, // Gunakan URL gambar pertama yang telah diproses di sini
+      gambar: imageName, 
+      url_gambar: imageUrl, 
       harga: req.body.harga,
       deskripsi: req.body.deskripsi,
       status: req.body.status,
-      // ... other fields
     };
 
     // Simpan layanan ke database menggunakan metode yang sesuai
@@ -45,8 +43,7 @@ exports.create = async (req, res) => {
 
 // serialize
 const layananSerializer = new JSONAPISerializer('layanan', {
-  attributes: ['nama', 'gambar', 'harga', 'deskripsi', 'status'],
-  plugins: [bufferPlugin],
+  attributes: ['nama', 'gambar','url_gambar', 'harga', 'deskripsi', 'status'],
 });
 
 // Retrieve all layanans from the database.
@@ -92,26 +89,21 @@ exports.findOne = (req, res) => {
 // Update a layanan by the id in the request
 exports.update = async (req, res) => {
   const id = req.params.id;
+  const file = req.file;
 
   // Process uploaded files:
-  const imageUrls = [];
-  for (const file of req.files) {
-    // Simpan atau proses gambar dan dapatkan URL atau path-nya
-    const imageUrl = `/images/${file.filename}`; // Ubah sesuai dengan lokasi penyimpanan gambar Anda
-    imageUrls.push(imageUrl);
-  }
+  const imageName = `${file.filename}`;
+  const imageUrl = `${req.protocol}://${req.get('host')}/layanan/${file.filename}`;
 
-  // Ambil URL gambar pertama jika tersedia
-  const gambar = imageUrls.length > 0 ? imageUrls[0] : null;
-
+  
   // Buat objek update dengan URL gambar yang telah diproses
   const layanan = {
     nama: req.body.nama,
-    ...(gambar && { gambar }), // Perbarui gambar hanya jika ada
+    ...(imageName && { gambar: imageName }), // Perbarui gambar hanya jika ada
+    url_gambar: imageUrl,
     harga: req.body.harga,
     deskripsi: req.body.deskripsi,
     status: req.body.status,
-    // ... other fields
   };
 
   // Simpan layanan ke database menggunakan metode yang sesuai

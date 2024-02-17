@@ -2,9 +2,9 @@ module.exports = app => {
   const express = require('express');
   const router = express.Router();
   const layanan = require('../controllers/layananController');
-  const uploader = require('../middleware/uploader');
+  const upl_layanan = require('../middleware/layanan');
   // Route for image upload
-  router.post('/', uploader.array('gambar', 2), layanan.create);
+  router.post('/', upl_layanan.single('gambar'), layanan.create);
   
     // Retrieve all Tutorials
     router.get("/", layanan.findAll);
@@ -16,7 +16,7 @@ module.exports = app => {
     router.get("/:id", layanan.findOne);
   
     // Update a Tutorial with id
-    router.put("/:id", uploader.array('gambar', 2), layanan.update);
+    router.put("/:id", upl_layanan.single('gambar'), layanan.update);
   
     // Delete a Tutorial with id
     router.delete("/:id", layanan.delete);

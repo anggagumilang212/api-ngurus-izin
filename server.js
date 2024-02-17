@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
+app.use('/layanan', express.static('public/assets/images/layanan')); //masukkan public direktori
 app.use(cors());
 
 const db = require("./app/models");

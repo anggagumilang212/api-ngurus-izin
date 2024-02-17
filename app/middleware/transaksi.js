@@ -12,14 +12,14 @@ const TYPE_IMAGE = {
 }
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/assets/images/layanan'); // Adjust path as needed
+    cb(null, 'public/assets/images/transaksi'); 
   },
   filename: (req, file, cb) => {
-    // const ext = TYPE_IMAGE[file.mimetype]
+    // const ext = TYPE_IMAGE[file.mimetype] 
     cb(null, Date.now() + uniqid() + path.extname(file.originalname));
   },
 });
 
-const layanan = multer({ storage: storage });
+const transaksi = multer({ storage: storage });
 
-module.exports = layanan;
+module.exports = transaksi;
