@@ -3,46 +3,47 @@ const Transaksi = db.transaksi;
 const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 const bufferPlugin = require("buffer-serializer");
+const multer = require('multer');
+const transaksiMiddleware = require('../middleware/transaksi');
 
 // Create and Save a new transaksi
 exports.create = async (req, res) => {
   try {
-    // Process uploaded files:
-    const imageUrls = [];
-    for (const file of req.files) {
-      // Simpan atau proses gambar dan dapatkan URL atau path-nya
-      const imageUrl = `/images/${file.filename}`; // Ubah sesuai dengan lokasi penyimpanan gambar Anda
-      imageUrls.push(imageUrl);
-    }
+    await transaksiMiddleware(req, res);
 
-    // Ambil URL gambar pertama jika tersedia
-    const ktp = imageUrls.length > 0 ? imageUrls[0] : null;
-    const npwp = imageUrls.length > 0 ? imageUrls[0] : null;
+    const ktpSatuName = req.files['ktp_satu'][0].filename;
+    const ktpDuaName = req.files['ktp_dua'][0].filename;
+    const npwpSatuName = req.files['npwp_satu'][0].filename;
+    const npwpDuaName = req.files['npwp_dua'][0].filename;
 
-    // Buat objek layanan dengan URL gambar yang telah diproses
-    const layanan = {
-      id_layanan: req.body.id_layanan,
-      ktp: ktp, // Gunakan URL gambar pertama yang telah diproses di sini
-      ktp: npwp, // Gunakan URL gambar pertama yang telah diproses di sini
-      phone: req.body.phone,
-      lokasi: req.body.lokasi,
-      status: req.body.status,
-      // ... other fields
-    };
+   const transaksi = {
+     id_layanan: req.body.id_layanan,
+     ktp_satu: ktpSatuName,
+     ktp_dua: ktpDuaName,
+     npwp_satu: npwpSatuName,
+     npwp_dua: npwpDuaName,
+     url_ktp_satu: imageUrl,
+     url_ktp_dua: `${imageUrl}/ktp_dua`,
+     url_npwp_satu: `${imageUrl}/npwp_satu`,
+     url_npwp_dua: `${imageUrl}/npwp_dua`,
+     phone: req.body.phone,
+     domisili: req.body.domisili,
+     status_transaksi: 1,
+   };
 
-    // Simpan layanan ke database menggunakan metode yang sesuai
+    // Simpan transaksi ke database menggunakan metode yang sesuai
     // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
 
     // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
-    const newLayanan = await Layanan.create(layanan);
-    res.status(201).send(newLayanan); // Atau respons yang diinginkan
+    const newTransaksi = await Transaksi.create(transaksi);
+    res.status(201).send(newTransaksi); // Atau respons yang diinginkan
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 }
 
   const transaksiSerializer = new JSONAPISerializer('transaksi', {
-    attributes: ['id_layanan', 'ktp', 'npwp', 'phone', 'lokasi'],
+    attributes: ['id_layanan', 'ktp_satu', 'ktp_dua', 'npwp_satu', 'npwp_dua',  'npwp', 'phone', 'domisili'],
   });
 
 // Retrieve all transaksis from the database.

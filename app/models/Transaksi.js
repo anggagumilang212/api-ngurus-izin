@@ -28,7 +28,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING
       },
       phone: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER(15)
       },
       domisili: {
         type: Sequelize.STRING
