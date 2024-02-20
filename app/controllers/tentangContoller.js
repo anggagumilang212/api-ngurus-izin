@@ -51,16 +51,39 @@ exports.create = async (req, res) => {
 // Retrieve all Tentangs from the database.
 exports.findAll = async (req, res) => {
   try {
-    const tentangs = await Tentang.findAll();
+    // Mendapatkan nilai halaman dan ukuran halaman dari query string (default ke halaman 1 dan ukuran 10 jika tidak disediakan)
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
     
-    // Gunakan serializer untuk mengubah data menjadi JSON
+    // Menghitung offset berdasarkan halaman dan ukuran halaman
+    const offset = (page - 1) * pageSize;
+
+    // Mengambil data tentang dengan pagination menggunakan Sequelize
+    const tentangs = await Tentang.findAll({
+      limit: pageSize,
+      offset: offset
+    });
+
+    // Menghitung total jumlah tentang
+    const totalCount = await Tentang.count();
+
+    // Menghitung total jumlah halaman berdasarkan ukuran halaman
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    // Menggunakan serializer untuk mengubah data menjadi JSON
     const tentang = tentangSerializer.serialize(tentangs);
 
-    // Kirim response dengan data JSON
-    res.send(tentang);
+    // Kirim response dengan data JSON dan informasi pagination
+    res.send({
+      data: tentang,
+      currentPage: page,
+      totalPages: totalPages,
+      pageSize: pageSize,
+      totalCount: totalCount
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: 'Error retrieving tentang.' });
+    res.status(500).send({ message: 'Error retrieving tentangs.' });
   }
 };
 

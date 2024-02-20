@@ -14,11 +14,11 @@ exports.create = async (req, res) => {
       const ktpName = files.find(file => file.fieldname == 'ktp').filename;
       const npwpName = files.find(file => file.fieldname == 'npwp').filename;
 
-      const ktpImageUrl = `${req.protocol}://${req.get('host')}/layanan/${ktpName}`;
-      const npwpImageUrl = `${req.protocol}://${req.get('host')}/layanan/${npwpName}`;
+      const ktpImageUrl = `${req.protocol}://${req.get('host')}/transaksi/${ktpName}`;
+      const npwpImageUrl = `${req.protocol}://${req.get('host')}/transaksi/${npwpName}`;
 
       const transaksi = {
-        id_layanan: req.body.id_layanan,
+        id_transaksi: req.body.id_transaksi,
         ktp: ktpName,
         npwp: npwpName,
         url_ktp: ktpImageUrl,
@@ -37,7 +37,7 @@ exports.create = async (req, res) => {
 
 
   const transaksiSerializer = new JSONAPISerializer('transaksi', {
-    attributes: ['id_layanan', 'ktp', 'ktp', 'url_ktp', 'url_npwp', 'phone', 'domisili'],
+    attributes: ['id_transaksi', 'ktp', 'ktp', 'url_ktp', 'url_npwp', 'phone', 'domisili'],
     keyForAttribute: 'camelCase',
 
   });
@@ -45,16 +45,39 @@ exports.create = async (req, res) => {
 // Retrieve all transaksis from the database.
 exports.findAll = async (req, res) => {
   try {
-    const transaksis = await Transaksi.findAll();
+    // Mendapatkan nilai halaman dan ukuran halaman dari query string (default ke halaman 1 dan ukuran 10 jika tidak disediakan)
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
     
-    // Gunakan serializer untuk mengubah data menjadi JSON
+    // Menghitung offset berdasarkan halaman dan ukuran halaman
+    const offset = (page - 1) * pageSize;
+
+    // Mengambil data transaksi dengan pagination menggunakan Sequelize
+    const transaksis = await Transaksi.findAll({
+      limit: pageSize,
+      offset: offset
+    });
+
+    // Menghitung total jumlah transaksi
+    const totalCount = await Transaksi.count();
+
+    // Menghitung total jumlah halaman berdasarkan ukuran halaman
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    // Menggunakan serializer untuk mengubah data menjadi JSON
     const transaksi = transaksiSerializer.serialize(transaksis);
 
-    // Kirim response dengan data JSON
-    res.send(transaksi);
+    // Kirim response dengan data JSON dan informasi pagination
+    res.send({
+      data: transaksi,
+      currentPage: page,
+      totalPages: totalPages,
+      pageSize: pageSize,
+      totalCount: totalCount
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: 'Error retrieving transaksi.' });
+    res.status(500).send({ message: 'Error retrieving transaksis.' });
   }
 };
 
@@ -150,14 +173,14 @@ exports.deleteAll = (req, res) => {
 
 // Find all filter transaksis (phone)
 // exports.findAllPublished = (req, res) => {
-//     layanan.findAll({ where: { phone: true } })
+//     transaksi.findAll({ where: { phone: true } })
 //       .then(data => {
 //         res.send(data);
 //       })
 //       .catch(err => {
 //         res.status(500).send({
 //           message:
-//             err.message || "Some error occurred while retrieving layanans."
+//             err.message || "Some error occurred while retrieving transaksis."
 //         });
 //       });
 //   };

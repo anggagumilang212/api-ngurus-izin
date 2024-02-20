@@ -50,13 +50,36 @@ const testimoniSerializer = new JSONAPISerializer('testimoni', {
 // Retrieve all testimonis from the database.
 exports.findAll = async (req, res) => {
   try {
-    const testimonis = await Testimoni.findAll();
+    // Mendapatkan nilai halaman dan ukuran halaman dari query string (default ke halaman 1 dan ukuran 10 jika tidak disediakan)
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    
+    // Menghitung offset berdasarkan halaman dan ukuran halaman
+    const offset = (page - 1) * pageSize;
 
-    // Gunakan serializer untuk mengubah data menjadi JSON
+    // Mengambil data testimoni dengan pagination menggunakan Sequelize
+    const testimonis = await Testimoni.findAll({
+      limit: pageSize,
+      offset: offset
+    });
+
+    // Menghitung total jumlah testimoni
+    const totalCount = await Testimoni.count();
+
+    // Menghitung total jumlah halaman berdasarkan ukuran halaman
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    // Menggunakan serializer untuk mengubah data menjadi JSON
     const testimoni = testimoniSerializer.serialize(testimonis);
 
-    // Kirim response dengan data JSON
-    res.send(testimoni);
+    // Kirim response dengan data JSON dan informasi pagination
+    res.send({
+      data: testimoni,
+      currentPage: page,
+      totalPages: totalPages,
+      pageSize: pageSize,
+      totalCount: totalCount
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: 'Error retrieving testimonis.' });

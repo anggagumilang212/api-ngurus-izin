@@ -50,13 +50,36 @@ const layananSerializer = new JSONAPISerializer('layanan', {
 // Retrieve all layanans from the database.
 exports.findAll = async (req, res) => {
   try {
-    const layanans = await Layanan.findAll();
+    // Mendapatkan nilai halaman dan ukuran halaman dari query string (default ke halaman 1 dan ukuran 10 jika tidak disediakan)
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    
+    // Menghitung offset berdasarkan halaman dan ukuran halaman
+    const offset = (page - 1) * pageSize;
 
-    // Gunakan serializer untuk mengubah data menjadi JSON
+    // Mengambil data layanan dengan pagination menggunakan Sequelize
+    const layanans = await Layanan.findAll({
+      limit: pageSize,
+      offset: offset
+    });
+
+    // Menghitung total jumlah layanan
+    const totalCount = await Layanan.count();
+
+    // Menghitung total jumlah halaman berdasarkan ukuran halaman
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    // Menggunakan serializer untuk mengubah data menjadi JSON
     const layanan = layananSerializer.serialize(layanans);
 
-    // Kirim response dengan data JSON
-    res.send(layanan);
+    // Kirim response dengan data JSON dan informasi pagination
+    res.send({
+      data: layanan,
+      currentPage: page,
+      totalPages: totalPages,
+      pageSize: pageSize,
+      totalCount: totalCount
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: 'Error retrieving layanans.' });
