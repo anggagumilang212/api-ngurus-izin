@@ -86,46 +86,43 @@ exports.findOne = (req, res) => {
       });
     });
 };
-
 // Update a layanan by the id in the request
 exports.update = async (req, res) => {
   const id = req.params.id;
   const file = req.file;
 
-  // Process uploaded files:
-  const imageName = `${file.filename}`;
-  const imageUrl = `${req.protocol}://${req.get('host')}/layanan/${file.filename}`;
-
-  
-  // Buat objek update dengan URL gambar yang telah diproses
-  const layanan = {
-    nama: req.body.nama,
-    ...(imageName && { gambar: imageName }), // Perbarui gambar hanya jika ada
-    urlGambar: imageUrl,
-    harga: req.body.harga,
-    deskripsi: req.body.deskripsi,
-    status: req.body.status,
-  };
-
-  // Simpan layanan ke database menggunakan metode yang sesuai
-  // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
-
-  // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
   try {
-    const updatedLayanan = await Layanan.update(layanan, {
-      where: { id: id }
-    });
-    if (updatedLayanan) {
-      res.send({
-        message: "Layanan berhasil diubah."
-      });
-        } else {
-      res.status(404).send({ message: `Layanan with id=${id} not found` });
+    let layananData = req.body;
+    
+    // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
+    if (file) {
+      const imageName = file.filename;
+      const imageUrl = `${req.protocol}://${req.get('host')}/layanan/${file.filename}`;
+
+      layananData = {
+        ...layananData,
+        gambar: imageName,
+        urlGambar: imageUrl,
+      };
     }
+
+    // Temukan layanan yang akan diupdate
+    const layanan = await Layanan.findByPk(id);
+    if (!layanan) {
+      return res.status(404).send({ message: `Layanan with id=${id} not found` });
+    }
+
+    // Perbarui data layanan dengan data baru
+    await layanan.update(layananData);
+
+    res.send({
+      message: "Layanan berhasil diubah."
+    });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 };
+
 
 // Delete a layanan with the specified id in the request
 exports.delete = (req, res) => {
