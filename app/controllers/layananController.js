@@ -71,7 +71,7 @@ exports.findAll = async (req, res) => {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     // Menggunakan serializer untuk mengubah data menjadi JSON
-    const layanan = await Layanan.findAll();
+    const layanan = layananSerializer.serialize(layanans);
 
     // Kirim response dengan data JSON dan informasi pagination
     res.send({
