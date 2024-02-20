@@ -4,7 +4,6 @@ const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 const bufferPlugin = require("buffer-serializer");
 const multer = require('multer');
-const upload = require('../middleware/transaksi');
 
 exports.create = async (req, res) => {
   try {
@@ -12,8 +11,8 @@ exports.create = async (req, res) => {
 
 
       // Ambil nama file dan buat URL gambar
-      const ktpName = files.find(file => file.fieldname === 'ktp').filename;
-      const npwpName = files.find(file => file.fieldname === 'npwp').filename;
+      const ktpName = files.find(file => file.fieldname == 'ktp').filename;
+      const npwpName = files.find(file => file.fieldname == 'npwp').filename;
 
       const ktpImageUrl = `${req.protocol}://${req.get('host')}/layanan/${ktpName}`;
       const npwpImageUrl = `${req.protocol}://${req.get('host')}/layanan/${npwpName}`;

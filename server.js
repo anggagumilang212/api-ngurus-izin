@@ -5,6 +5,7 @@ const app = express();
 app.use('/layanan', express.static('public/assets/images/layanan')); //masukkan public direktori
 app.use('/transaksi', express.static('public/assets/images/transaksi')); //masukkan public direktori
 app.use('/tentang', express.static('public/assets/images/tentang')); //masukkan public direktori
+app.use('/testimoni', express.static('public/assets/images/testimoni')); //masukkan public direktori
 app.use(cors());
 
 const db = require("./app/models");
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
 require("./app/routes/tentang")(app);
 require("./app/routes/layanan")(app);
 require("./app/routes/transaksi")(app);
+require("./app/routes/testimoni")(app);
 require("./app/routes/administrators")(app);
 
 // set port, listen for requests

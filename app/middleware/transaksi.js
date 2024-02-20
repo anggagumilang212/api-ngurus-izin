@@ -3,13 +3,7 @@ const multer = require('multer');
 const uniqid = require('uniqid');
 const path = require('path');
 
-const TYPE_IMAGE = {
-  "image/jpg": "jpg",
-  "image/jpeg": "jpeg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/webm": "webm",
-}
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -20,6 +14,6 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage }).array(['ktp', 'npwp']);
 
 module.exports = upload;
