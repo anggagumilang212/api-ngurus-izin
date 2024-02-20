@@ -1,10 +1,11 @@
 module.exports = app => {
     const tentang = require("../controllers/tentangContoller");
-  
-    var router = require("express").Router();
-  
+    const express = require('express');
+  const router = express.Router();
+    const upl_tentang = require('../middleware/layanan');
+
     // Create a new Tutorial
-    router.post("/", tentang.create);
+    router.post("/", upl_tentang.single('gambar'), tentang.create);
   
     // Retrieve all Tutorials
     router.get("/", tentang.findAll);

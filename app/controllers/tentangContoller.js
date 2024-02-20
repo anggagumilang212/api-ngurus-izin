@@ -1,41 +1,48 @@
 const db = require("../models");
+
 const Tentang = db.tentang;
 const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
+const multer = require('multer');
+
 // Create and Save a new Tentang
-exports.create = (req, res) => {
-    // Validate request
-    if (!req.body.tentang) {
-      res.status(400).send({
-        message: "Content can not be empty!"
-      });
-      return;
-    }
-  
-    // Create a Tutorial
+exports.create = async (req, res) => {
+  try {
+    const file = req.file;
+
+    // Process uploaded files:
+      // Simpan atau proses gambar dan dapatkan URL atau path-nya
+      const imageName = `${file.filename}`;
+      const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
+    
+
+    // Ambil URL gambar pertama jika tersedia
+
+    // Buat objek Tentang dengan URL gambar yang telah diproses
     const tentang = {
+      nama: req.body.nama,
       tentang: req.body.tentang,
       phone: req.body.phone,
       email: req.body.email,
-      instagram: req.body.instagram,
+      lokasi: req.body.lokasi,
+      gambar: imageName, 
+      urlGambar: imageUrl, 
     };
-  
-    // Save Tutorial in the database
-    Tentang.create(tentang)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the Tentng."
-        });
-      });
-  };
+
+    // Simpan Tentang ke database menggunakan metode yang sesuai
+    // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
+
+    // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
+    const newTentang = await Tentang.create(tentang);
+    res.status(201).send(newTentang); // Atau respons yang diinginkan
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+}
 
   const tentangSerializer = new JSONAPISerializer('tentang', {
-    attributes: ['tentang', 'phone', 'lokasi', 'email'],
+    attributes: ['nama','tentang', 'phone', 'lokasi', 'email', 'gambar', 'urlGambar'],
   });
   
 
@@ -79,29 +86,41 @@ exports.findOne = (req, res) => {
 };
 
 // Update a Tentang by the id in the request
-exports.update = (req, res) => {
-    const id = req.params.id;
-  
-    Tentang.update(req.body, {
-      where: { id: id }
-    })
-      .then(num => {
-        if (num == 1) {
-          res.send({
-            message: "Tentang was updated successfully."
-          });
-        } else {
-          res.send({
-            message: `Cannot update Tentang with id=${id}. Maybe Tentang was not found or req.body is empty!`
-          });
-        }
-      })
-      .catch(err => {
-        res.status(500).send({
-          message: "Error updating Tentang with id=" + id
-        });
-      });
-  };
+exports.update = async (req, res) => {
+  const id = req.params.id;
+  const file = req.file;
+
+  try {
+    let tentangData = req.body;
+    
+    // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
+    if (file) {
+      const imageName = file.filename;
+      const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
+
+      tentangData = {
+        ...tentangData,
+        gambar: imageName,
+        urlGambar: imageUrl,
+      };
+    }
+    
+    // Temukan tentang yang akan diupdate
+    const tentang = await Tentang.findByPk(id);
+    if (!tentang) {
+      return res.status(404).send({ message: `tentang with id=${id} not found` });
+    }
+
+    // Perbarui data tentang dengan data baru, termasuk data yang tidak berubah
+    await tentang.update(tentangData);
+
+    res.send({
+      message: "tentang berhasil diubah."
+    });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
 
 // Delete a Tentang with the specified id in the request
 exports.delete = (req, res) => {

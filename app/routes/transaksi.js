@@ -1,11 +1,11 @@
 module.exports = app => {
     const transaksi = require("../controllers/transaksiController");
-    const upl_transaksi = require('../middleware/transaksi');
+    const upload = require('../middleware/transaksi');
 
     var router = require("express").Router();
   
     // Create a new Tutorial
-    router.post("/",   transaksi.create);
+    router.post("/", upload.array(['ktp', 'npwp'], 2), transaksi.create);
   
     // Retrieve all Tutorials
     router.get("/", transaksi.findAll);
@@ -17,7 +17,7 @@ module.exports = app => {
     router.get("/:id", transaksi.findOne);
   
     // Update a Tutorial with id
-    router.put("/:id",  transaksi.update);
+    router.put("/:id", upload.array(['ktp', 'npwp'], 2), transaksi.update);
   
     // Delete a Tutorial with id
     router.delete("/:id", transaksi.delete);

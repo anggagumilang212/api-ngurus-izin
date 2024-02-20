@@ -4,58 +4,55 @@ const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 const bufferPlugin = require("buffer-serializer");
 const multer = require('multer');
-const { ktpSatuMiddleware, ktpDuaMiddleware, npwpSatuMiddleware, npwpDuaMiddleware  } = require('../middleware/transaksi');
+const upload = require('../middleware/transaksi');
 
-// Create and Save a new transaksi
-exports.create = async (req, res, next) => {
+exports.create = async (req, res) => {
   try {
-   // Upload ktp_satu
-   await ktpSatuMiddleware(req, res, next);
-   const ktpSatuName = `${req.file.filename}`;
+    // Menggunakan multer.array untuk menangani array dari file yang diunggah
+    upload.array(['ktp', 'npwp'])(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).send({ message: 'File size exceeds limit' });
+        } else if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+          return res.status(400).send({ message: 'Unexpected extra file' });
+        }
+        // Handle other Multer errors as needed
+      }
 
-   // Upload ktp_dua
-   await ktpDuaMiddleware(req, res, next);
-   const ktpDuaName = `${req.file.filename}`;
+      // Ambil file yang diunggah
+      const files = req.files;
 
-   // Upload npwp_satu
-   await npwpSatuMiddleware(req, res, next);
-   const npwpSatuName = `${req.file.filename}`;
+      // Pastikan bahwa semua file diunggah
+      if (!files || files.length < 2) {
+        return res.status(400).send({ message: 'Files are missing' });
+      }
 
-   // Upload npwp_dua
-   await npwpDuaMiddleware(req, res, next);
-   const npwpDuaName = `${req.file.filename}`;
+      // Ambil nama file dan buat URL gambar
+      const ktpName = files.find(file => file.fieldname === 'ktp').filename;
+      const npwpName = files.find(file => file.fieldname === 'npwp').filename;
 
-   const imageUrl = `${req.protocol}://${req.get('host')}/transaksi/${file.filename}`;
+      const ktpImageUrl = `${req.protocol}://${req.get('host')}/layanan/${ktpName}`;
+      const npwpImageUrl = `${req.protocol}://${req.get('host')}/layanan/${npwpName}`;
 
-   // ...
-
-   const transaksi = {
-     id_layanan: req.body.id_layanan,
-     ktp_satu: ktpSatuName,
-     ktp_dua: ktpDuaName,
-     npwp_satu: npwpSatuName,
-     npwp_dua: npwpDuaName,
-     url_ktp_satu: imageUrl,
-     url_ktp_dua: `${imageUrl}/ktp_dua`,
-     url_npwp_satu: `${imageUrl}/npwp_satu`,
-     url_npwp_dua: `${imageUrl}/npwp_dua`,
-     phone: req.body.phone,
-     domisili: req.body.domisili,
-     status_transaksi: 1,
-   };
-
-    // Simpan layanan ke database menggunakan metode yang sesuai
-    // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
-    if (!req.file) {
-      return res.status(400).send({ message: 'No file uploaded' });
-    }
-    // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
+      const transaksi = {
+        id_layanan: req.body.id_layanan,
+        ktp: ktpName,
+        npwp: npwpName,
+        url_ktp: ktpImageUrl,
+        url_npwp: npwpImageUrl,
+        phone: req.body.phone,
+        domisili: req.body.domisili,
+        status_transaksi: 1,
+      };
+      // Respon sukses jika semuanya berhasil
+    });
     const newTransaksi = await Transaksi.create(transaksi);
     res.status(201).send(newTransaksi); // Atau respons yang diinginkan
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 }
+
 
   const transaksiSerializer = new JSONAPISerializer('transaksi', {
     attributes: ['id_layanan', 'ktp_satu', 'ktp_dua', 'npwp_satu', 'npwp_dua',  'npwp', 'phone', 'domisili'],

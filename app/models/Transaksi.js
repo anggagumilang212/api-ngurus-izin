@@ -3,28 +3,16 @@ module.exports = (sequelize, Sequelize) => {
       id_layanan: {
         type: Sequelize.INTEGER
       },
-      ktp_satu: {
+      ktp: {
         type: Sequelize.STRING
       },
-      ktp_dua: {
+      npwp: {
         type: Sequelize.STRING
       },
-      npwp_satu: {
+      url_ktp: {
         type: Sequelize.STRING
       },
-      npwp_dua: {
-        type: Sequelize.STRING
-      },
-      url_ktp_satu: {
-        type: Sequelize.STRING
-      },
-      url_ktp_dua: {
-        type: Sequelize.STRING
-      },
-      url_npwp_satu: {
-        type: Sequelize.STRING
-      },
-      url_npwp_dua: {
+      url_npwp: {
         type: Sequelize.STRING
       },
       phone: {
