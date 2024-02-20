@@ -87,6 +87,7 @@ exports.findOne = (req, res) => {
     });
 };
 // Update a layanan by the id in the request
+// Update a layanan by the id in the request
 exports.update = async (req, res) => {
   const id = req.params.id;
   const file = req.file;
@@ -105,14 +106,14 @@ exports.update = async (req, res) => {
         urlGambar: imageUrl,
       };
     }
-
+    
     // Temukan layanan yang akan diupdate
     const layanan = await Layanan.findByPk(id);
     if (!layanan) {
       return res.status(404).send({ message: `Layanan with id=${id} not found` });
     }
 
-    // Perbarui data layanan dengan data baru
+    // Perbarui data layanan dengan data baru, termasuk data yang tidak berubah
     await layanan.update(layananData);
 
     res.send({
@@ -122,6 +123,7 @@ exports.update = async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 };
+
 
 
 // Delete a layanan with the specified id in the request
