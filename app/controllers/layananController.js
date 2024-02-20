@@ -6,6 +6,7 @@ const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 const multer = require('multer');
 
+
 // Create and Save a new layanan
 exports.create = async (req, res) => {
   try {
@@ -70,7 +71,7 @@ exports.findAll = async (req, res) => {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     // Menggunakan serializer untuk mengubah data menjadi JSON
-    const layanan = layananSerializer.serialize(layanans);
+    const layanan = await Layanan.findAll();
 
     // Kirim response dengan data JSON dan informasi pagination
     res.send({
