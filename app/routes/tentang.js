@@ -17,7 +17,7 @@ module.exports = app => {
     router.get("/:id", tentang.findOne);
   
     // Update a Tutorial with id
-    router.put("/:id", tentang.update);
+    router.put("/:id",upl_tentang.single('gambar'), tentang.update);
   
     // Delete a Tutorial with id
     router.delete("/:id", tentang.delete);
