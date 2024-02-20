@@ -4,17 +4,30 @@ const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 const bufferPlugin = require("buffer-serializer");
 const multer = require('multer');
-const transaksiMiddleware = require('../middleware/transaksi');
+const { ktpSatuMiddleware, ktpDuaMiddleware, npwpSatuMiddleware, npwpDuaMiddleware  } = require('../middleware/transaksi');
 
 // Create and Save a new transaksi
-exports.create = async (req, res) => {
+exports.create = async (req, res, next) => {
   try {
-    await transaksiMiddleware(req, res);
+   // Upload ktp_satu
+   await ktpSatuMiddleware(req, res, next);
+   const ktpSatuName = `${req.file.filename}`;
 
-    const ktpSatuName = req.files['ktp_satu'][0].filename;
-    const ktpDuaName = req.files['ktp_dua'][0].filename;
-    const npwpSatuName = req.files['npwp_satu'][0].filename;
-    const npwpDuaName = req.files['npwp_dua'][0].filename;
+   // Upload ktp_dua
+   await ktpDuaMiddleware(req, res, next);
+   const ktpDuaName = `${req.file.filename}`;
+
+   // Upload npwp_satu
+   await npwpSatuMiddleware(req, res, next);
+   const npwpSatuName = `${req.file.filename}`;
+
+   // Upload npwp_dua
+   await npwpDuaMiddleware(req, res, next);
+   const npwpDuaName = `${req.file.filename}`;
+
+   const imageUrl = `${req.protocol}://${req.get('host')}/transaksi/${file.filename}`;
+
+   // ...
 
    const transaksi = {
      id_layanan: req.body.id_layanan,
@@ -31,9 +44,11 @@ exports.create = async (req, res) => {
      status_transaksi: 1,
    };
 
-    // Simpan transaksi ke database menggunakan metode yang sesuai
+    // Simpan layanan ke database menggunakan metode yang sesuai
     // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
-
+    if (!req.file) {
+      return res.status(400).send({ message: 'No file uploaded' });
+    }
     // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
     const newTransaksi = await Transaksi.create(transaksi);
     res.status(201).send(newTransaksi); // Atau respons yang diinginkan
