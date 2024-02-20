@@ -2,7 +2,7 @@ module.exports = app => {
     const tentang = require("../controllers/tentangContoller");
     const express = require('express');
   const router = express.Router();
-    const upl_tentang = require('../middleware/layanan');
+    const upl_tentang = require('../middleware/tentang');
 
     // Create a new Tutorial
     router.post("/", upl_tentang.single('gambar'), tentang.create);

@@ -8,24 +8,8 @@ const upload = require('../middleware/transaksi');
 
 exports.create = async (req, res) => {
   try {
-    // Menggunakan multer.array untuk menangani array dari file yang diunggah
-    upload.array(['ktp', 'npwp'])(req, res, async function (err) {
-      if (err instanceof multer.MulterError) {
-        if (err.code === 'LIMIT_FILE_SIZE') {
-          return res.status(400).send({ message: 'File size exceeds limit' });
-        } else if (err.code === 'LIMIT_UNEXPECTED_FILE') {
-          return res.status(400).send({ message: 'Unexpected extra file' });
-        }
-        // Handle other Multer errors as needed
-      }
+    const files = req.files;
 
-      // Ambil file yang diunggah
-      const files = req.files;
-
-      // Pastikan bahwa semua file diunggah
-      if (!files || files.length < 2) {
-        return res.status(400).send({ message: 'Files are missing' });
-      }
 
       // Ambil nama file dan buat URL gambar
       const ktpName = files.find(file => file.fieldname === 'ktp').filename;
@@ -45,7 +29,6 @@ exports.create = async (req, res) => {
         status_transaksi: 1,
       };
       // Respon sukses jika semuanya berhasil
-    });
     const newTransaksi = await Transaksi.create(transaksi);
     res.status(201).send(newTransaksi); // Atau respons yang diinginkan
   } catch (error) {
@@ -55,7 +38,9 @@ exports.create = async (req, res) => {
 
 
   const transaksiSerializer = new JSONAPISerializer('transaksi', {
-    attributes: ['id_layanan', 'ktp_satu', 'ktp_dua', 'npwp_satu', 'npwp_dua',  'npwp', 'phone', 'domisili'],
+    attributes: ['id_layanan', 'ktp', 'ktp', 'url_ktp', 'url_npwp', 'phone', 'domisili'],
+    keyForAttribute: 'camelCase',
+
   });
 
 // Retrieve all transaksis from the database.

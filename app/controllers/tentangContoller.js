@@ -43,6 +43,8 @@ exports.create = async (req, res) => {
 
   const tentangSerializer = new JSONAPISerializer('tentang', {
     attributes: ['nama','tentang', 'phone', 'lokasi', 'email', 'gambar', 'urlGambar'],
+    keyForAttribute: 'camelCase',
+
   });
   
 
