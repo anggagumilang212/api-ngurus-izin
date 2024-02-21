@@ -26,7 +26,7 @@ exports.create = async (req, res) => {
       urlGambar: imageUrl, 
       harga: req.body.harga,
       deskripsi: req.body.deskripsi,
-      status: req.body.status,
+      jabatan: req.body.jabatan,
     };
 
     // Simpan testimoni ke database menggunakan metode yang sesuai
@@ -42,7 +42,7 @@ exports.create = async (req, res) => {
 
 // serialize
 const testimoniSerializer = new JSONAPISerializer('testimoni', {
-  attributes: ['nama', 'gambar', 'urlGambar', 'testimoni'],
+  attributes: ['nama', 'gambar', 'urlGambar', 'testimoni', 'jabatan'],
   keyForAttribute: 'camelCase',
 
 });

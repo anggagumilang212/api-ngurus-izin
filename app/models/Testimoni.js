@@ -13,6 +13,9 @@ module.exports = (sequelize, Sequelize) => {
       testimoni: {
         type: Sequelize.STRING
       },
+      jabatan: {
+        type: Sequelize.STRING
+      },
     });
 
     return Testimoni;
