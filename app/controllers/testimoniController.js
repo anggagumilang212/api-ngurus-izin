@@ -24,8 +24,7 @@ exports.create = async (req, res) => {
       nama: req.body.nama,
       gambar: imageName, 
       urlGambar: imageUrl, 
-      harga: req.body.harga,
-      deskripsi: req.body.deskripsi,
+      testimoni: req.body.testimoni,
       jabatan: req.body.jabatan,
     };
 
@@ -91,7 +90,7 @@ exports.findAll = async (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  testimoni.findByPk(id)
+  Testimoni.findByPk(id)
     .then(testimoni => {
       if (testimoni) {
         const serializedData = testimoniSerializer.serialize(testimoni);
@@ -153,7 +152,7 @@ exports.update = async (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  testimoni.destroy({
+  Testimoni.destroy({
     where: { id: id }
   })
     .then(num => {
@@ -176,7 +175,7 @@ exports.delete = (req, res) => {
 
 // Delete all testimonis from the database.
 exports.deleteAll = (req, res) => {
-  testimoni.destroy({
+  Testimoni.destroy({
     where: {},
     truncate: false
   })
