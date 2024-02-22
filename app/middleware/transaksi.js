@@ -3,8 +3,6 @@ const multer = require('multer');
 const uniqid = require('uniqid');
 const path = require('path');
 
-
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/assets/images/transaksi');
@@ -14,6 +12,6 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage }).array(['ktp', 'npwp']);
+const upload = multer({ storage: storage });
 
 module.exports = upload;

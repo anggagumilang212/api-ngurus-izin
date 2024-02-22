@@ -7,14 +7,16 @@ const multer = require('multer');
 
 exports.create = async (req, res) => {
   try {
-    const files = req.files;
-
+    const file = req.files;
 
       // Ambil nama file dan buat URL gambar
-      const ktpName = files.find(file => file.fieldname == 'ktp').filename;
-      const npwpName = files.find(file => file.fieldname == 'npwp').filename;
+      const ktpNameSatu = `${file.filename}`;
+      const ktpNameDua = `${file.filename}`;
+      const NpwpNameSatu = `${file.filename}`;
+      const NpwpNameDua = `${file.filename}`;
+      // const npwpName = files.find(file => files.fieldname == 'npwp').filename;
 
-      const ktpImageUrl = `${req.protocol}://${req.get('host')}/transaksi/${ktpName}`;
+      const ktpImageUrl = `${req.protocol}://${req.get('host')}/transaksi/${ktpNameSatu}`;
       const npwpImageUrl = `${req.protocol}://${req.get('host')}/transaksi/${npwpName}`;
 
       const transaksi = {
@@ -37,7 +39,7 @@ exports.create = async (req, res) => {
 
 
   const transaksiSerializer = new JSONAPISerializer('transaksi', {
-    attributes: ['id_transaksi', 'ktp', 'ktp', 'url_ktp', 'url_npwp', 'phone', 'domisili'],
+    attributes: ['id_transaksi', 'ktp_satu', 'ktp_dua', 'npwp_satu', 'npwp_dua', 'url_ktp_satu', 'url_ktp_dua', 'url_npwp_satu', 'url_npwp_dua', 'phone', 'domisili'],
     keyForAttribute: 'camelCase',
 
   });

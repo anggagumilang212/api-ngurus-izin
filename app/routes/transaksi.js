@@ -4,8 +4,7 @@ module.exports = app => {
 
     var router = require("express").Router();
   
-    // Create a new Tutorial
-    router.post("/", upload, transaksi.create);
+    router.post("/", upload.single(), transaksi.create);
   
     // Retrieve all Tutorials
     router.get("/", transaksi.findAll);
@@ -17,7 +16,7 @@ module.exports = app => {
     router.get("/:id", transaksi.findOne);
   
     // Update a Tutorial with id
-    router.put("/:id", upload, transaksi.update);
+    router.put("/:id",  upload.single(), transaksi.update);
   
     // Delete a Tutorial with id
     router.delete("/:id", transaksi.delete);

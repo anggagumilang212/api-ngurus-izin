@@ -49,31 +49,35 @@ const layananSerializer = new JSONAPISerializer('layanan', {
 });
 
 // Retrieve all layanans from the database.
+
 exports.findAll = async (req, res) => {
   try {
-    // Mendapatkan nilai halaman dan ukuran halaman dari query string (default ke halaman 1 dan ukuran 10 jika tidak disediakan)
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
-    
-    // Menghitung offset berdasarkan halaman dan ukuran halaman
     const offset = (page - 1) * pageSize;
 
-    // Mengambil data layanan dengan pagination menggunakan Sequelize
-    const layanans = await Layanan.findAll({
+    const keyword = req.query.keyword || '';
+
+    // Query pencarian
+    const searchQuery = {
+      where: {
+        [Op.or]: [
+          { nama: { [Op.like]: `%${keyword}%` } },
+          { harga: { [Op.like]: `%${keyword}%` } },
+          { deskripsi: { [Op.like]: `%${keyword}%` } }
+        ]
+      },
       limit: pageSize,
       offset: offset
-    });
+    };
 
-    // Menghitung total jumlah layanan
-    const totalCount = await Layanan.count();
+    // Mengambil data layanan dengan pagination dan pencarian menggunakan Sequelize
+    const layanans = await Layanan.findAll(searchQuery);
+    const totalCount = await Layanan.count(searchQuery);
 
-    // Menghitung total jumlah halaman berdasarkan ukuran halaman
     const totalPages = Math.ceil(totalCount / pageSize);
-
-    // Menggunakan serializer untuk mengubah data menjadi JSON
     const layanan = layananSerializer.serialize(layanans);
 
-    // Kirim response dengan data JSON dan informasi pagination
     res.send({
       data: layanan,
       currentPage: page,
@@ -86,6 +90,8 @@ exports.findAll = async (req, res) => {
     res.status(500).send({ message: 'Error retrieving layanans.' });
   }
 };
+
+
 
 
 // Find a single layanan with an id
