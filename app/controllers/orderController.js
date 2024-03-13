@@ -47,7 +47,7 @@ exports.create = async (req, res) => {
 
 // Serialize
 const adminSerializer = new JSONAPISerializer("order", {
-  attributes: ["nama", "domisili", "phone", "layananId", "status"],
+  attributes: ["nama", "domisili", "phone", "Layanan", "status"],
   keyForAttribute: "camelCase",
 });
 
@@ -151,6 +151,10 @@ exports.findAll = async (req, res) => {
       },
       limit: pageSize,
       offset: offset,
+      include: [{
+        model: Layanan,
+        attributes: ['nama'],
+      }]
     };
 
     // Jika role adalah 'merchant', tambahkan kondisi status
@@ -168,6 +172,7 @@ exports.findAll = async (req, res) => {
 
     // Menggunakan serializer untuk mengubah data menjadi JSON
     const admin = adminSerializer.serialize(order);
+    // const admin = order;
 
     // Kirim response dengan data JSON dan informasi pagination
     res.send({
