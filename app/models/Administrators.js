@@ -13,9 +13,11 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
     },
     phone: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
     },
     role: {
+      // affiliate = admin gmt
+      // merchant = admin izinaja
       type: Sequelize.ENUM("affiliate", "merchant"),
     },
   });

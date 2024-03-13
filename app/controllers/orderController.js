@@ -138,6 +138,7 @@ exports.findAll = async (req, res) => {
     //   offset: offset,
     // });
     const keyword = req.query.keyword || "";
+    const role = req.query.role;
 
     // Query pencarian
     const searchQuery = {
@@ -151,6 +152,12 @@ exports.findAll = async (req, res) => {
       limit: pageSize,
       offset: offset,
     };
+
+    // Jika role adalah 'merchant', tambahkan kondisi status
+    if (role == 'merchant') {
+      searchQuery.where.status = { [Op.like]: '%on process%' };
+    }
+
     const order = await Order.findAll(searchQuery);
     const totalCount = await Order.count(searchQuery);
     // Menghitung total jumlah order
@@ -169,6 +176,7 @@ exports.findAll = async (req, res) => {
       totalPages: totalPages,
       pageSize: pageSize,
       totalCount: totalCount,
+      role: req.query.role
     });
   } catch (error) {
     console.error(error);

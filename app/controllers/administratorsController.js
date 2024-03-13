@@ -15,6 +15,12 @@ exports.create = async (req, res) => {
         .send({ message: "Username and password are required!" });
     }
 
+    if (!req.body.role) {
+      return res
+        .status(400)
+        .send({ message: "Role are required!" });
+    }
+
     // Hash password securely using bcrypt
     const saltRounds = 10; // Adjust salt rounds as needed (higher for stronger hashing)
     const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
@@ -25,6 +31,7 @@ exports.create = async (req, res) => {
       email: req.body.email || "", // Assign an empty string if email is not provided
       name: req.body.name || "", // Assign an empty string if name is not provided
       phone: req.body.phone || "", // Assign an empty string if phone is not provided
+      role: req.body.role, // Assign an empty string if phone is not provided
       password: hashedPassword,
     };
 
@@ -41,7 +48,7 @@ exports.create = async (req, res) => {
 
 // serialize
 const adminSerializer = new JSONAPISerializer("administrators", {
-  attributes: ["username", "email", "password", "name", "phone"],
+  attributes: ["username", "email", "password", "name", "phone", "role"],
 });
 
 // Retrieve all administratorss from the database.
@@ -133,6 +140,9 @@ exports.update = async (req, res) => {
 
     // Update administrator object with hashed password
     req.body.password = hashedPassword;
+  }
+  else{
+    req.body.password = req.body.password_lama
   }
 
   Administrators.update(req.body, {
