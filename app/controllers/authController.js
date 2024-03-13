@@ -27,7 +27,7 @@ exports.login = async (req, res) => {
       expiresIn: "1h",
     });
 
-    // Kirim token sebagai respons
+// Kirim token sebagai respons
     res.json({ token });
   } catch (error) {
     console.error(error);
@@ -59,3 +59,51 @@ exports.logout = (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+exports.cekToken = async (req, res) => {
+  try {
+    // Dapatkan token dari header Authorization
+    const token = req.header("Authorization");
+
+    if (!token) {
+      return res.status(401).json({ message: "Missing token, logout failed" });
+    }
+
+    // decode JWT untuk mendapatkan id dari user
+    decodeJWTAndGetID(token)
+      .then(async (id) => {
+        const administrator = await Administrators.findOne({
+          where: { id: id }
+        })
+
+        res.json({ role: administrator.role })
+
+      })
+      .catch((err) => {
+        res.status(500).json({ message: `Gagal mendeskripsi JWT:`, err })
+      })
+
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: `Internal server error ${error}` })
+  }
+};
+
+function decodeJWTAndGetID(token) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        // mengambbil id dari payload JWT
+        const id = decoded.id;
+        resolve(id);
+      }
+    })
+  })
+}
+
