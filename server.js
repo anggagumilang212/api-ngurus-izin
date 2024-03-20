@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const db = require("./app/models");
 
 const app = express();
@@ -24,6 +25,24 @@ app.use(express.json());
 
 // Parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+
+// Set CORS options
+const allowedOrigins = ["http://localhost:3000", "https://ngurusizin.online"];
+
+// Konfigurasi CORS
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Memeriksa apakah asal permintaan ada di daftar yang diizinkan
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Origin not allowed by CORS"));
+    }
+  },
+};
+
+// Gunakan middleware CORS dengan konfigurasi yang telah disediakan
+app.use(cors(corsOptions));
 
 // Simple route
 app.get("/", (req, res) => {
