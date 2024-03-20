@@ -31,6 +31,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://ngurusizin.online",
   "http://89.116.187.91:3000",
+  "http://89.116.187.91",
 ];
 
 // Konfigurasi CORS
