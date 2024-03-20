@@ -29,6 +29,10 @@ db.testimoni = require("./Testimoni.js")(sequelize, Sequelize);
 db.administrators = require("./Administrators.js")(sequelize, Sequelize);
 db.order = require("./Order.js")(sequelize, Sequelize);
 
+
+// relasi table order ke layanan
+db.order.belongsTo(db.layanan, { foreignKey: 'layananId' });
+
 // Sinkronkan model dengan database
 sequelize
   .sync()

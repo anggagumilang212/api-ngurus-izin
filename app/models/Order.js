@@ -22,32 +22,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.ENUM("pending", "success", "on process", "cancel"),
       defaultValue: "pending",
     },
-    layananId: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      // references: {
-      //   model: "Layanan", // Model yang direferensikan
-      //   key: "id", // Primary key dari model Layanan
-      // },
-    },
   });
-
-  Order.associate = (models) => {
-    // Optionally use this approach if you want to define the association here
-    Order.belongsTo(models.Layanan, {
-      foreignKey: "layananId",
-      as: "layanan",
-    });
-  };
-
-  // Layanan &&
-  //   Order.belongsTo(Layanan, { foreignKey: "layananId", as: "layanan" });
-  // Order.associate = (models) => {
-  //   Order.belongsTo(models.Layanan, {
-  //     foreignKey: "layananId",
-  //     as: "layanans",
-  //   });
-  // };
-  // Order.belongsTo(Layanan, { foreignKey: "layananId", as: "layanan" });
+  
   return Order;
 };
