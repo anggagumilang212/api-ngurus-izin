@@ -18,9 +18,9 @@ db.sequelize
     console.log("Failed to sync db: " + err.message);
   });
 
-var corsOptions = {
-  origin: "https://ngurusizin.online",
-};
+  const corsOptions = {
+    origin: ["https://ngurusizin.online", "http://localhost:3000"],
+  };
 
 app.use(cors(corsOptions));
 
