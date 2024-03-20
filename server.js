@@ -19,7 +19,7 @@ db.sequelize
   });
 
 var corsOptions = {
-  origin: "http://89.116.187.91:3000",
+  origin: "https://ngurusizin.online",
 };
 
 app.use(cors(corsOptions));
