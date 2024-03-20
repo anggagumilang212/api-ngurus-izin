@@ -27,7 +27,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Set CORS options
-const allowedOrigins = ["http://localhost:3000", "https://ngurusizin.online"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://ngurusizin.online",
+  "http://89.116.187.91:3000",
+];
 
 // Konfigurasi CORS
 const corsOptions = {
