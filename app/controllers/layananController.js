@@ -132,7 +132,10 @@ exports.update = async (req, res) => {
     // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
     if (file) {
       const imageName = file.filename;
-      const imageUrl = `${req.protocol}://${req.get('host')}/layanan/${file.filename}`;
+     // local
+      // const imageUrl = `${req.protocol}://${req.get('host')}/layanan/${file.filename}`;
+      // production
+      const imageUrl = `https://api.ngurusizin.online/layanan/${file.filename}`;
 
       layananData = {
         ...layananData,

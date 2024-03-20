@@ -124,8 +124,11 @@ exports.update = async (req, res) => {
     // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
     if (file) {
       const imageName = file.filename;
-      const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
-
+       // local
+      // const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
+      // production
+      const imageUrl = `https://api.ngurusizin.online/tentang/${file.filename}`;
+    
       tentangData = {
         ...tentangData,
         gambar: imageName,
