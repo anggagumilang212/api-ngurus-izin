@@ -1,14 +1,15 @@
 const express = require("express");
-const cors = require("cors");
+const db = require("./app/models");
 
 const app = express();
-app.use("/layanan", express.static("public/assets/images/layanan")); //masukkan public direktori
-app.use("/transaksi", express.static("public/assets/images/transaksi")); //masukkan public direktori
-app.use("/tentang", express.static("public/assets/images/tentang")); //masukkan public direktori
-app.use("/testimoni", express.static("public/assets/images/testimoni")); //masukkan public direktori
-app.use(cors());
 
-const db = require("./app/models");
+// Serve static files
+app.use("/layanan", express.static("public/assets/images/layanan"));
+app.use("/transaksi", express.static("public/assets/images/transaksi"));
+app.use("/tentang", express.static("public/assets/images/tentang"));
+app.use("/testimoni", express.static("public/assets/images/testimoni"));
+
+// Sync database
 db.sequelize
   .sync()
   .then(() => {
@@ -18,23 +19,18 @@ db.sequelize
     console.log("Failed to sync db: " + err.message);
   });
 
-var corsOptions = {
-  origin: "http://89.116.187.91:3000",
-};
-
-app.use(cors(corsOptions));
-
-// parse requests of content-type - application/json
+// Parse requests of content-type - application/json
 app.use(express.json());
 
-// parse requests of content-type - application/x-www-form-urlencoded
+// Parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-// simple route
+// Simple route
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to Izin Aja application." });
 });
 
+// Include routes
 require("./app/routes/tentang")(app);
 require("./app/routes/layanan")(app);
 require("./app/routes/transaksi")(app);
@@ -43,7 +39,7 @@ require("./app/routes/administrators")(app);
 require("./app/routes/auth")(app);
 require("./app/routes/order")(app);
 
-// set port, listen for requests
+// Set port, listen for requests
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
