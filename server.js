@@ -26,27 +26,12 @@ app.use(express.json());
 // Parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-// Set CORS options
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://ngurusizin.online",
-  "http://89.116.187.91:3000",
-  "http://89.116.187.91",
-];
-
-// Konfigurasi CORS
+// Set CORS options to allow all origins
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Memeriksa apakah asal permintaan ada di daftar yang diizinkan
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Origin not allowed by CORS"));
-    }
-  },
+  origin: "*",
 };
 
-// Gunakan middleware CORS dengan konfigurasi yang telah disediakan
+// Use CORS middleware with the provided configuration
 app.use(cors(corsOptions));
 
 // Simple route
