@@ -14,7 +14,10 @@ exports.create = async (req, res) => {
     // Process uploaded files:
       // Simpan atau proses gambar dan dapatkan URL atau path-nya
       const imageName = `${file.filename}`;
-      const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
+      // local
+      // const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
+      // production
+       const imageUrl = `https://api.ngurusizin.online/tentang/${file.filename}`;
     
 
     // Ambil URL gambar pertama jika tersedia
