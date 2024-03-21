@@ -12,22 +12,22 @@ exports.create = async (req, res) => {
     const file = req.file;
 
     // Process uploaded files:
-      // Simpan atau proses gambar dan dapatkan URL atau path-nya
-      const imageName = `${file.filename}`;
-  
-      // local
-      // const imageUrl = `${req.protocol}://${req.get('host')}/testimoni/${file.filename}`;
-      // production
-      const imageUrl = `https://api.ngurusizin.online/testimoni/${file.filename}`;
+    // Simpan atau proses gambar dan dapatkan URL atau path-nya
+    const imageName = `${file.filename}`;
+
+    // local
+    // const imageUrl = `${req.protocol}://${req.get('host')}/testimoni/${file.filename}`;
+    // production
+    const imageUrl = `https://api.ngurusizin.online/testimoni/${file.filename}`;
 
 
     // Ambil URL gambar pertama jika tersedia
-
+    // hah
     // Buat objek testimoni dengan URL gambar yang telah diproses
     const testimoni = {
       nama: req.body.nama,
-      gambar: imageName, 
-      urlGambar: imageUrl, 
+      gambar: imageName,
+      urlGambar: imageUrl,
       testimoni: req.body.testimoni,
       jabatan: req.body.jabatan,
     };
@@ -56,7 +56,7 @@ exports.findAll = async (req, res) => {
     // Mendapatkan nilai halaman dan ukuran halaman dari query string (default ke halaman 1 dan ukuran 10 jika tidak disediakan)
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
-    
+
     // Menghitung offset berdasarkan halaman dan ukuran halaman
     const offset = (page - 1) * pageSize;
 
@@ -120,11 +120,11 @@ exports.update = async (req, res) => {
 
   try {
     let testimoniData = req.body;
-    
+
     // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
     if (file) {
       const imageName = file.filename;
-    // local
+      // local
       // const imageUrl = `${req.protocol}://${req.get('host')}/testimoni/${file.filename}`;
       // production
       const imageUrl = `https://api.ngurusizin.online/testimoni/${file.filename}`;
@@ -135,7 +135,7 @@ exports.update = async (req, res) => {
         urlGambar: imageUrl,
       };
     }
-    
+
     // Temukan testimoni yang akan diupdate
     const testimoni = await Testimoni.findByPk(id);
     if (!testimoni) {
