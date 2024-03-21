@@ -14,8 +14,12 @@ exports.create = async (req, res) => {
     // Process uploaded files:
       // Simpan atau proses gambar dan dapatkan URL atau path-nya
       const imageName = `${file.filename}`;
-      const imageUrl = `${req.protocol}://${req.get('host')}/testimoni/${file.filename}`;
-    
+  
+      // local
+      // const imageUrl = `${req.protocol}://${req.get('host')}/testimoni/${file.filename}`;
+      // production
+      const imageUrl = `https://api.ngurusizin.online/testimoni/${file.filename}`;
+
 
     // Ambil URL gambar pertama jika tersedia
 
@@ -120,7 +124,10 @@ exports.update = async (req, res) => {
     // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
     if (file) {
       const imageName = file.filename;
-      const imageUrl = `${req.protocol}://${req.get('host')}/testimoni/${file.filename}`;
+    // local
+      // const imageUrl = `${req.protocol}://${req.get('host')}/testimoni/${file.filename}`;
+      // production
+      const imageUrl = `https://api.ngurusizin.online/testimoni/${file.filename}`;
 
       testimoniData = {
         ...testimoniData,
